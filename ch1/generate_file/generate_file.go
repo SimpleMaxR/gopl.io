@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"sync"
 	"time"
 )
 
-func generate_file() {
-	f, err := os.Create("test_file100.txt")
+func gen(filename string, lines int, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	f, err := os.Create(filename)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -16,7 +19,7 @@ func generate_file() {
 	words := []string{"Hello", "Golang", "Yonex", "Victor", "Typescript"}
 
 	start := time.Now()
-	for i := 0; i < 10000000; i++ {
+	for i := 0; i < lines; i++ {
 		line := ""
 		for j := 0; j < 10; j++ {
 			line += words[rand.Intn(len(words))] + " "
@@ -25,10 +28,12 @@ func generate_file() {
 		f.WriteString(line)
 	}
 	end := time.Now()
-	fmt.Println("Time used: ", end.Sub(start))
-
+	fmt.Printf("Time used for %s: %s\n", filename, end.Sub(start))
 }
-
 func main() {
-	generate_file()
+	wg := &sync.WaitGroup{}
+	wg.Add(2)
+	go gen("test_file100.txt", 1000000, wg)
+	go gen("test_file10.txt", 100000, wg)
+	wg.Wait()
 }
