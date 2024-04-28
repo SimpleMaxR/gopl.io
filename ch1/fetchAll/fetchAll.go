@@ -33,14 +33,18 @@ func fetch(url string, ch chan<- string) {
 		return
 	}
 
+	//check if have old file
+	if _, err := os.Stat(url[8:] + "_resp.txt"); err == nil {
+		os.Remove(url[8:] + "_resp.txt")
+	}
+
 	// create file
-	respF, err := os.Create(url + "_resp")
+	respF, err := os.Create(url[8:] + "_resp.txt")
 	if err != nil {
 		ch <- fmt.Sprintf("while creating %s file: %v", url, err)
 		return
 	}
 
-	defer respF.Close()
 	nbytes, err := io.Copy(respF, resp.Body)
 	resp.Body.Close()
 	if err != nil {
