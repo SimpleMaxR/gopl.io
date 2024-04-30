@@ -33,7 +33,7 @@ func gen(filename string, lines int, wg *sync.WaitGroup) {
 func main() {
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
-	go gen("test_file100.txt", 1000000, wg)
+	go gen("test_file1000.txt", 10000000, wg)
 	go gen("test_file10.txt", 100000, wg)
 	wg.Wait()
 }
